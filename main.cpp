@@ -4,10 +4,6 @@
 #include <tuple>
 #include <type_traits>
 
-/// <summary>
-/// Home work 04 - SFINAE
-/// </summary>
-
 template<class T>
 using remove_cr_t = typename std::remove_const_t<std::remove_reference_t<T>>;
 
