@@ -10,6 +10,12 @@ using remove_cr_t = typename std::remove_const_t<std::remove_reference_t<T>>;
 template <typename> struct is_tuple : std::false_type {};
 template <typename ...T> struct is_tuple<std::tuple<T...>> : std::true_type {};
 
+template <typename> struct is_list : std::false_type {};
+template <typename T> struct is_list<std::list<T>> : std::true_type {};
+
+template <typename> struct is_vector : std::false_type {};
+template <typename T> struct is_vector<std::vector<T>> : std::true_type {};
+
 /// <summary>
 /// Iteration by tuple.
 /// </summary>
@@ -44,11 +50,10 @@ std::vector<U> tuple_to_vector(const T& tuple) {
 /// Function <c>print_ip</c>.
 /// Implementation 1.
 /// </summary>
-/// <typeparam name="T">Container (except for the string).</typeparam>
+/// <typeparam name="T">std::vector or std::list.</typeparam>
 template <typename T>
 std::enable_if_t<
-            std::is_same_v<decltype(begin(std::declval<T>()), end(std::declval<T>()), void()), void> &&
-            not std::is_same_v<std::string, T>
+        is_list<T>{} or is_vector<T>{}, void
 >
 print_ip(const T& value) {
     std::size_t index = 0;
