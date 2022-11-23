@@ -16,6 +16,9 @@ template <typename T> struct is_list<std::list<T>> : std::true_type {};
 template <typename> struct is_vector : std::false_type {};
 template <typename T> struct is_vector<std::vector<T>> : std::true_type {};
 
+template <typename> struct is_char_array : std::false_type {};
+template <std::size_t I> struct is_char_array<char[I]> : std::true_type {};
+
 /// <summary>
 /// Iteration by tuple.
 /// </summary>
@@ -52,9 +55,7 @@ std::vector<U> tuple_to_vector(const T& tuple) {
 /// </summary>
 /// <typeparam name="T">std::vector or std::list.</typeparam>
 template <typename T>
-std::enable_if_t<
-        is_list<T>{} or is_vector<T>{}, void
->
+std::enable_if_t<is_list<T>{} or is_vector<T>{}, void>
 print_ip(const T& value) {
     std::size_t index = 0;
     for (auto elem : value) {
@@ -71,7 +72,7 @@ print_ip(const T& value) {
 /// </summary>
 /// <typeparam name="T">String.</typeparam>
 template <typename T>
-std::enable_if_t<std::is_same_v<std::string, T>, void>
+std::enable_if_t<std::is_same_v<std::string, T> or is_char_array<T>(), void>
 print_ip(const T& value) {
     std::cout << value << std::endl;
 }
@@ -112,6 +113,7 @@ int main() {
     print_ip( int32_t{2130706433} ); // 127.0.0.1
     print_ip( int64_t{8875824491850138409} );// 123.45.67.89.101.112.131.41
     print_ip( std::string{"Hello, World!"} ); // Hello, World!
+    print_ip( "Hello, World!" ); // Hello, World!
     print_ip( std::vector<int>{100, 200, 300, 400} ); // 100.200.300.400
     print_ip( std::list<short>{400, 300, 200, 100} ); // 400.300.200.100
     print_ip( std::make_tuple(123, 456, 789, 0) ); // 123.456.789.0
